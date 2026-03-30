@@ -1,0 +1,11 @@
+[project]
+name = "rdt2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "imagecodecs[all]",
+    "numcodecs<0.13",
+    "zarr<3",
+]

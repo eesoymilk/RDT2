@@ -1,0 +1,6 @@
+name: mug_handover
+type: single
+shards_dir: data/mug_handover_webdataset
+kwargs:
+  instruction_path: data/mug_handover_webdataset/instructions.json
+  normalizer_path: data/umi_normalizer.pt

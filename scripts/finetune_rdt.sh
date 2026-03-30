@@ -17,7 +17,7 @@ mkdir -p "./logs/${WANDB_PROJECT}"
 LOGGING_DIR="./logs/${WANDB_PROJECT}"
 LOGGING_FILE="${LOGGING_DIR}/${CUR_TIME}.log"
 
-WDS_CONFIG_FILE="configs/datasets/example.yaml"
+WDS_CONFIG_FILE="configs/datasets/mug_handover.yaml"
 VISION_LANGUAGE_MODEL_NAME_OR_PATH="robotics-diffusion-transformer/RDT2-VQ"
 
 TRAIN_BATCH_SIZE=64

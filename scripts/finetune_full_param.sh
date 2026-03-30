@@ -1,8 +1,8 @@
 # Define your env settings here 
 # e.g., nccl, network, proxy, etc.
 
-TASK="bimanual-ur5e-example"
-DATASET_CONFIG_PATH="configs/datasets/example.yaml"
+TASK="mug-handover"
+DATASET_CONFIG_PATH="configs/datasets/mug_handover.yaml"
 
 export TOKENIZER_ID="Qwen/Qwen2.5-VL-7B-Instruct"
 export VAE_ID="robotics-diffusion-transformer/RVQActionTokenizer"
