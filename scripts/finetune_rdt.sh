@@ -38,8 +38,7 @@ else
     echo "Folder '$OUTPUT_DIR' already exists"
 fi
 
-# e.g. PYTHONPATH="/ssd/RDT2"
-PYTHONPATH="<repository-path>" accelerate launch rdt/main.py \
+PYTHONPATH="/home/ywc/Codes/RDT2" uv run accelerate launch rdt/main.py \
     --deepspeed="scripts/zero1.json" \
     --config_path="./configs/rdt/${ENV_TYPE}.yaml" \
     --pretrained_vision_language_model_name_or_path=$VISION_LANGUAGE_MODEL_NAME_OR_PATH \
