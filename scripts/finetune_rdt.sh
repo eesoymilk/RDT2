@@ -18,7 +18,8 @@ LOGGING_DIR="./logs/${WANDB_PROJECT}"
 LOGGING_FILE="${LOGGING_DIR}/${CUR_TIME}.log"
 
 WDS_CONFIG_FILE="configs/datasets/mug_handover.yaml"
-VISION_LANGUAGE_MODEL_NAME_OR_PATH="robotics-diffusion-transformer/RDT2-FM"
+VISION_LANGUAGE_MODEL_NAME_OR_PATH="Qwen/Qwen2.5-VL-7B-Instruct"
+RDT_MODEL_NAME_OR_PATH="robotics-diffusion-transformer/RDT2-FM"
 
 TRAIN_BATCH_SIZE=64
 SAMPLE_BATCH_SIZE=32
@@ -42,6 +43,7 @@ PYTHONPATH="/home/ywc/Codes/RDT2" uv run accelerate launch rdt/main.py \
     --deepspeed="scripts/zero1.json" \
     --config_path="./configs/rdt/${ENV_TYPE}.yaml" \
     --pretrained_vision_language_model_name_or_path=$VISION_LANGUAGE_MODEL_NAME_OR_PATH \
+    --pretrained_model_name_or_path=$RDT_MODEL_NAME_OR_PATH \
     --output_dir=$OUTPUT_DIR \
     --webdataset_config=$WDS_CONFIG_FILE \
     --train_batch_size=$TRAIN_BATCH_SIZE \
