@@ -57,4 +57,5 @@ PYTHONPATH="/home/ywc/Codes/RDT2" uv run accelerate launch rdt/main.py \
     --mixed_precision="bf16" \
     --dataloader_num_workers=8 \
     --image_aug \
-    --report_to=wandb 2>&1 | tee -a "$LOGGING_FILE"
+    # To use wandb for experiment tracking, run `wandb login` first and change to --report_to=wandb
+    --report_to=none 2>&1 | tee -a "$LOGGING_FILE"
