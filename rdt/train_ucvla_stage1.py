@@ -338,7 +338,7 @@ def train(args, logger):
                     else:
                         vlang_kv_cache = [outputs.past_key_values[selected_layers]]
 
-                loss = ucvla_runner.compute_loss(
+                loss = ucvla_runner(
                     action_gt=nsamples,
                     user_id=user_id,
                     state_tokens=states,
