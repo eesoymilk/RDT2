@@ -143,7 +143,7 @@ class UCVLARDTRunner(nn.Module):
 
         noise = torch.randn(action_gt.shape, dtype=dtype, device=device)
         timesteps = self.base.sample_timesteps(batch_size, device)
-        t = timesteps.view(-1, 1, 1)
+        t = timesteps.view(-1, 1, 1).to(dtype=dtype)
         noisy_action = action_gt * t + noise * (1 - t)
 
         lang_cond, img_cond, action_traj, state_cond = self.base.adapt_conditions(

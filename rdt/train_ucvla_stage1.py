@@ -267,7 +267,7 @@ def train(args, logger):
                 val_nsamples = normalizer["action"].normalize(val_actions).to(
                     dtype=weight_dtype, device=accelerator.device
                 )
-                val_states = val_batch["states"].to(dtype=weight_dtype)
+                val_states = val_batch["states"].to(dtype=weight_dtype, device=accelerator.device)
                 uid_true = val_batch["user_id"].to(accelerator.device)
 
                 lang_attn_mask = val_batch["vision_language_model_inputs"]["attention_mask"].to(dtype=torch.bool)
@@ -323,7 +323,7 @@ def train(args, logger):
                 nsamples = normalizer["action"].normalize(actions).to(
                     dtype=weight_dtype, device=accelerator.device
                 )
-                states = batch["states"].to(dtype=weight_dtype)
+                states = batch["states"].to(dtype=weight_dtype, device=accelerator.device)
                 user_id = batch["user_id"].to(accelerator.device)
 
                 with torch.no_grad():
