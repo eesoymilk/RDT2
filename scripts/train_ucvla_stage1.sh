@@ -32,7 +32,6 @@ fi
 PYTHONPATH="/home/ywc/Codes/RDT2" uv run accelerate launch \
     --num_processes=$NUM_GPUS \
     rdt/main_ucvla_stage1.py \
-    --deepspeed="scripts/zero1.json" \
     --config_path="./configs/rdt/post_train.yaml" \
     --pretrained_vision_language_model_name_or_path=$VISION_LANGUAGE_MODEL_NAME_OR_PATH \
     --pretrained_model_name_or_path=$RDT_FINETUNED_CHECKPOINT \
