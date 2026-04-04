@@ -1,29 +1,35 @@
 #!/usr/bin/env python3
 """
-Check if the finetuned RDT checkpoint actually differs from the base pretrained weights.
-Compares weight norms and a random sample of parameter differences.
+Compare two RDT checkpoints to verify weights actually changed during finetuning.
 """
-import sys
 import torch
 from pathlib import Path
-
 from models.rdt_runner import RDTRunner
 
-BASE_CKPT = "outputs/rdt/rdt2-action-expert/checkpoint-40000"
+CKPT_A = "outputs/rdt/rdt2-action-expert/checkpoint-35000"
+CKPT_B = "outputs/rdt/rdt2-action-expert/checkpoint-40000"
 
-print(f"Loading finetuned checkpoint from {BASE_CKPT}...")
-finetuned = RDTRunner.from_pretrained(BASE_CKPT)
+print(f"Loading {CKPT_A}...")
+model_a = RDTRunner.from_pretrained(CKPT_A)
+print(f"Loading {CKPT_B}...")
+model_b = RDTRunner.from_pretrained(CKPT_B)
 
-print("\n── Finetuned weight norms (sample) ────────────────")
-for name, param in list(finetuned.model.named_parameters())[:10]:
-    print(f"  {name}: norm={param.norm().item():.6f}, mean={param.mean().item():.6f}")
+params_a = dict(model_a.model.named_parameters())
+params_b = dict(model_b.model.named_parameters())
 
-print("\n── Checking if weights are all zero ────────────────")
-all_zero = all(p.norm().item() == 0.0 for p in finetuned.model.parameters())
-print(f"  All zero: {all_zero}")
+print("\n── Per-layer diff norms (sample) ───────────────────")
+total_diff = 0.0
+n_changed = 0
+for name in list(params_a.keys())[:15]:
+    diff = (params_a[name] - params_b[name]).norm().item()
+    total_diff += diff
+    if diff > 0:
+        n_changed += 1
+    print(f"  {name}: diff_norm={diff:.6f}")
 
-print("\n── Overall model stats ─────────────────────────────")
-total_norm = sum(p.norm().item() ** 2 for p in finetuned.model.parameters()) ** 0.5
-print(f"  Total param norm: {total_norm:.4f}")
-n_params = sum(p.numel() for p in finetuned.model.parameters())
-print(f"  Total params: {n_params:,}")
+print(f"\n── Summary ─────────────────────────────────────────")
+all_diffs = [(params_a[n] - params_b[n]).norm().item() for n in params_a]
+changed = sum(1 for d in all_diffs if d > 0)
+print(f"  Layers with any change: {changed} / {len(all_diffs)}")
+print(f"  Max diff norm: {max(all_diffs):.6f}")
+print(f"  Mean diff norm: {sum(all_diffs)/len(all_diffs):.6f}")
