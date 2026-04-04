@@ -14,6 +14,31 @@ from data.image_corrupt import image_corrupt
 def no_split(src):
     yield from src
 
+def get_val_dataset(shards_dir, val_shards=None):
+    """Non-resampled, non-shuffled dataset for offline evaluation."""
+    all_shards = sorted(glob.glob(os.path.join(shards_dir, "shard-*.tar")))
+    assert all_shards, f"No shards under {shards_dir}"
+    if val_shards is not None:
+        shards = [s for s in all_shards if os.path.basename(s) in val_shards]
+    else:
+        # Default: last shard is val
+        shards = [all_shards[-1]]
+    assert shards, f"No val shards matched in {shards_dir}"
+    dataset = (
+        wds.WebDataset(shards, shardshuffle=False, nodesplitter=no_split, workersplitter=no_split)
+        .decode("pil")
+        .map(
+            lambda sample: {
+                "image": sample["image.jpg"],
+                "action": sample["action.npy"],
+                "meta": sample["meta.json"],
+                "user_id": sample["meta.json"].get("user_id", -1),
+            }
+        )
+    )
+    return dataset
+
+
 def get_train_dataset(shards_dir):
     shards = sorted(glob.glob(os.path.join(shards_dir, "shard-*.tar")))
     random.shuffle(shards)
@@ -38,6 +63,7 @@ def get_train_dataset(shards_dir):
                 "image": sample["image.jpg"],
                 "action": sample["action.npy"],
                 "meta": sample["meta.json"],
+                "user_id": sample["meta.json"].get("user_id", -1),
             }
         )
         .with_epoch(nsamples=(2048 * 30 * 60 * 60))
@@ -126,11 +152,13 @@ def collate_fn(
 
     inputs = processor(text=texts, images=images, return_tensors="pt", padding=True)
     actions = torch.stack(actions, dim=0)  # (B, T, 20)
-    
+    user_ids = torch.tensor([example["user_id"] for example in examples], dtype=torch.long)
+
     batch = {
         "vision_language_model_inputs": inputs,
         "states": torch.zeros((actions.shape[0], 1, state_dim)),
         "actions": actions,
+        "user_id": user_ids,
     }
-    
+
     return batch
