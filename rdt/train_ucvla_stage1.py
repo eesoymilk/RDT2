@@ -283,12 +283,13 @@ def train(args, logger):
 
                 for uid_pred in range(args.n_users):
                     uid_tensor = torch.full_like(uid_true, uid_pred)
-                    pred = accelerator.unwrap_model(ucvla_runner).predict_action(
-                        user_id=uid_tensor,
-                        state_tokens=val_states,
-                        lang_kv_cache=vlang_kv_cache,
-                        lang_attn_mask=lang_attn_mask,
-                    )
+                    with torch.autocast("cuda", dtype=weight_dtype):
+                        pred = accelerator.unwrap_model(ucvla_runner).predict_action(
+                            user_id=uid_tensor,
+                            state_tokens=val_states,
+                            lang_kv_cache=vlang_kv_cache,
+                            lang_attn_mask=lang_attn_mask,
+                        )
                     # per-sample MSE
                     err = torch.nn.functional.mse_loss(pred, val_nsamples, reduction="none").mean(dim=[1, 2])
                     for i, ut in enumerate(uid_true.tolist()):
