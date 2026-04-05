@@ -38,10 +38,11 @@ class UCVLARDTModel(nn.Module):
         self.user_bias = self.user_bias.to(dtype=dtype)
         self.bias_proj = self.bias_proj.to(dtype=dtype)
 
-        # Zero-init: bias starts as identity so the wrapped model behaves
-        # exactly like the base VLA until training shifts user_bias.
+        # Zero-init user_bias so the model starts at base behavior.
+        # bias_proj.weight uses default Kaiming init so gradients flow through
+        # it to user_bias from step 0. bias_proj(zeros) = bias_proj.bias = 0
+        # so the initial bias added to t_embedder is still exactly zero.
         nn.init.zeros_(self.user_bias.weight)
-        nn.init.zeros_(self.bias_proj.weight)
         nn.init.zeros_(self.bias_proj.bias)
 
     @property
