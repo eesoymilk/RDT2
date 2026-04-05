@@ -364,6 +364,13 @@ def train(args, logger):
                     run_cross_user_eval(global_step)
 
             logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
+
+            if accelerator.is_main_process and global_step % 100 == 0:
+                unwrapped = accelerator.unwrap_model(ucvla_runner)
+                w = unwrapped.ucvla_model.user_bias.weight
+                for i in range(args.n_users):
+                    logs[f"bias_norm/user_{i}"] = w[i].norm().item()
+
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
